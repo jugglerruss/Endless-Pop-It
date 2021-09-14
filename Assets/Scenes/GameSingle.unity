@@ -557,7 +557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 10
-  _stopPointX: 36
+  _stopPointX: 38
   _endPointX: 0
   _portal: {fileID: 1688997538}
   _toch: {fileID: 166521513}

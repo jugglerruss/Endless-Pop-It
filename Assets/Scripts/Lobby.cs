@@ -7,9 +7,11 @@ public class Lobby: MonoBehaviour
     [SerializeField] private Camera _camera;
     [SerializeField] private LobbyUI _ui;
     [Range(0,5)] [SerializeField] private int _quality;
+    private static bool _initStatus = false;
     private void Awake()
     {
-        MobileAds.Initialize(initStatus => { });
+        if(!_initStatus)MobileAds.Initialize(initStatus => {});
+        _initStatus = true;
     }
     private void Start()
     {
@@ -30,14 +32,20 @@ public class Lobby: MonoBehaviour
     {
         AudioManager.Instance.PlayUIclick();
         SceneManager.LoadScene(1);
-    }
-    
+    }    
     public void MuteMusic(bool mute)
     {
         AudioManager.Instance.PlayUIclick();
         AudioManager.Instance.MuteMusic(mute);
     }
-
+    public void ShowLeaderboard()
+    {
+        PlayServices.Instance.ShowLeaderboard();
+    }
+    public void ShowAchievements()
+    {
+        PlayServices.Instance.ShowAchievements();
+    }
     public void QuitApp()
     {
         AudioManager.Instance.PlayUIclick();

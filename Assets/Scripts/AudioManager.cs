@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
     [SerializeField] private AudioSource _backgroundMusic; 
     [SerializeField] private AudioSource _popSource; 
@@ -8,33 +8,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource _dragSource; 
     [SerializeField] private AudioSource _UISource; 
     [SerializeField] private AudioClip[] _popSounds; 
-    [SerializeField] private AudioClip[] _popFailSounds;
-    
-    private static AudioManager instance;
-    public static AudioManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<AudioManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(AudioManager).Name;
-                    instance = obj.AddComponent<AudioManager>();
-                }
-            }
-            return instance;
-        }
-    }
-    private void Awake()
-    {
-        if (instance == null)
-            DontDestroyOnLoad(gameObject);
-        else
-            Destroy(gameObject);
-    }
+    [SerializeField] private AudioClip[] _popFailSounds;    
+
     public void PlayMusic()
     {
         _backgroundMusic.Play();
@@ -61,8 +36,7 @@ public class AudioManager : MonoBehaviour
         {
             _backgroundMusic.pitch = 2.5f;
             _backgroundMusic.volume = 1;
-        }
-            
+        }            
     }
     public void StopDrag()
     {

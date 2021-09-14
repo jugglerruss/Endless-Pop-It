@@ -2,72 +2,71 @@ using UnityEngine;
 using System;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using UnityEngine.SocialPlatforms;
 
 
-public class PlayServices : MonoBehaviour
+public class PlayServices : Singleton<PlayServices>
 {
     private string _leaderboardID = "CgkIyMm-4-IIEAIQEQ";
-    private static PlayServices instance;
-    public static PlayServices Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<PlayServices>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(PlayServices).Name;
-                    instance = obj.AddComponent<PlayServices>();
-                }
-            }
-            return instance;
-        }
-    }
-    private void Awake()
-    {
-        if (instance == null)
-            DontDestroyOnLoad(gameObject);
-        else
-            Destroy(gameObject);
-    }
+    private string _mStatusText = "Ready.";
+   
     void Start()
     {
+        Configurate();
+        DoAuthenticate();
+    }
+    private void Configurate()
+    {
+        PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder().Build();
+        PlayGamesPlatform.InitializeInstance(config);
+        PlayGamesPlatform.DebugLogEnabled = true;
+    }
+    private void DoAuthenticate()
+    {
         try
-        {
-            PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
-            .EnableSavedGames()
-            .RequestIdToken()
-            .Build();
-
-            PlayGamesPlatform.InitializeInstance(config);
-            PlayGamesPlatform.DebugLogEnabled = true;
+        {            
             PlayGamesPlatform.Activate();
-            Social.localUser.Authenticate((bool success) => { });
+            _mStatusText = "Authenticating...";
+            PlayGamesPlatform.Instance.Authenticate((bool success, string message) => {
+                if (success)
+                {
+                    _mStatusText = message + Social.localUser.userName;
+                }
+                else
+                {
+                    _mStatusText = message;
+                }
+            });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e);
         }
-        
     }
-
     public void AddScoreToLeaderboard(int playerScore)
     {
-        if (Social.localUser.authenticated)
+        if (PlayGamesPlatform.Instance.localUser.authenticated)
         {
-            Social.ReportScore(playerScore, _leaderboardID, success => { });
+            PlayGamesPlatform.Instance.ReportScore(playerScore, _leaderboardID, success => { });
+        }
+        else
+        {
+            DoAuthenticate();
+            PlayGamesPlatform.Instance.ReportScore(playerScore, _leaderboardID, success => { });
         }
         Debug.Log("AddScoreToLeaderboard" + playerScore);
     }
-
     public void ShowLeaderboard()
     {
         AudioManager.Instance.PlayUIclick();
-        if (Social.localUser.authenticated)
+        if (PlayGamesPlatform.Instance.localUser.authenticated)
         {
-            Social.ShowLeaderboardUI();
+            PlayGamesPlatform.Instance.ShowLeaderboardUI();
+        }
+        else
+        {
+            DoAuthenticate();
+            PlayGamesPlatform.Instance.ShowLeaderboardUI();
         }
         Debug.Log("ShowLeaderboard");
     }
@@ -75,18 +74,28 @@ public class PlayServices : MonoBehaviour
     public void ShowAchievements()
     {
         AudioManager.Instance.PlayUIclick();
-        if (Social.localUser.authenticated)
+        if (PlayGamesPlatform.Instance.localUser.authenticated)
         {
-            Social.ShowAchievementsUI();
+            PlayGamesPlatform.Instance.ShowAchievementsUI();
+        }
+        else
+        {
+            DoAuthenticate();
+            PlayGamesPlatform.Instance.ShowAchievementsUI();
         }
         Debug.Log("ShowAchievementsUI");
     }
 
     public void UnlockAchievement(string achievementID)
     {
-        if (Social.localUser.authenticated)
+        if (PlayGamesPlatform.Instance.localUser.authenticated)
         {
-            Social.ReportProgress(achievementID, 100f, success => { });
+            PlayGamesPlatform.Instance.ReportProgress(achievementID, 100f, success => { });
+        }
+        else
+        {
+            DoAuthenticate();
+            PlayGamesPlatform.Instance.ReportProgress(achievementID, 100f, success => { });
         }
         Debug.Log("UnlockAchievement " + achievementID);
     }

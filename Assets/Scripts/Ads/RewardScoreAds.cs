@@ -48,8 +48,7 @@ public class RewardScoreAds : MonoBehaviour
     }
     private void HandOnFailedToLoad(object sender, EventArgs args)
     {
+        _isTest = true;
         RequestInterstitial();
-        _game.LoseScore();
-        _game.Continue(false);
     }
 }

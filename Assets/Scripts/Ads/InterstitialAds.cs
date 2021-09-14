@@ -22,7 +22,7 @@ public class InterstitialAds : MonoBehaviour
         if (_interstitialAd.IsLoaded())
             _interstitialAd.Show();
         else
-            _interstitialAd.OnAdLoaded += HandOnAdLoaded;
+            Continue(false);
     }
     private void RequestInterstitial()
     {
@@ -45,7 +45,8 @@ public class InterstitialAds : MonoBehaviour
     }
     private void HandOnFailedToLoad(object sender, EventArgs args)
     {
-        Continue(false);
+        _isTest = true;
+        RequestInterstitial();
     }
     private void ContinueGame(object sender, EventArgs args)
     {
@@ -53,7 +54,7 @@ public class InterstitialAds : MonoBehaviour
     }
     private void Continue(bool success)
     {
-        RequestInterstitial();
+        if(success)RequestInterstitial();
         _game.LoseScore();
         _game.Continue(success);
     }

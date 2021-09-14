@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Translator : MonoBehaviour
+public class Translator : Singleton<Translator>
 {
-    private static Translator instance;
     private int _langId;
     private List<TranslatableText> _listText = new List<TranslatableText>();
     private string[,] _lineText =
@@ -27,31 +26,7 @@ public class Translator : MonoBehaviour
             "—Œ’–¿Õ»\nŒ◊ »"
         }
     };
-    public static Translator Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<Translator>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(Translator).Name;
-                    instance = obj.AddComponent<Translator>();
-                }
-            }
-            return instance;
-        }
-    }
-    private void Awake()
-    {
-        if (instance == null)
-            DontDestroyOnLoad(gameObject);
-        else
-            Destroy(gameObject);
-
-    }
+  
     private void Start()
     {
         if (!PlayerPrefs.HasKey("Language"))

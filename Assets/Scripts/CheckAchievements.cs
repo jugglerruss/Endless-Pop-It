@@ -3,33 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CheckAchievements : MonoBehaviour
-{
-    private static CheckAchievements instance;
-    public static CheckAchievements Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<CheckAchievements>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(CheckAchievements).Name;
-                    instance = obj.AddComponent<CheckAchievements>();
-                }
-            }
-            return instance;
-        }
-    }
-    private void Awake()
-    {
-        if (instance == null)
-            DontDestroyOnLoad(gameObject);
-        else
-            Destroy(gameObject);
-    }
+public class CheckAchievements : Singleton<CheckAchievements>
+{    
     public void CheckAchievementsScore(int score)
     {
         string id;
